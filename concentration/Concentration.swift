@@ -14,6 +14,12 @@ class Concentration {
     var indexOfFaceUpCard: Int?
     
     init(numberOfPairsOfCards: Int) {
+        startNewGame(numberOfPairsOfCards: numberOfPairsOfCards)
+    }
+    
+    func startNewGame(numberOfPairsOfCards: Int) {
+        cards = [Card]()
+        indexOfFaceUpCard = nil
         for _ in 1...numberOfPairsOfCards {
             let card = Card()
             cards += [card, card]

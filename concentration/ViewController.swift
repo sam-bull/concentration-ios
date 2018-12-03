@@ -20,7 +20,7 @@ class ViewController: UIViewController {
     
     @IBOutlet var cardButtons: [UIButton]!
     
-    var emojiChoices = ["🎃", "👻", "💀", "😈", "🦇", "😱"]
+    lazy var emojiChoices = getRandomTheme()
     
     @IBOutlet weak var flipCountLabel: UILabel!
     
@@ -57,6 +57,28 @@ class ViewController: UIViewController {
             emoji[card.identifier] = emojiChoices.remove(at: randomIndex)
         }
         return emoji[card.identifier] ?? "?"
+    }
+    
+    @IBAction func newGame() {
+        flipCount = 0
+        emojiChoices = getRandomTheme()
+        let numberOfPairsOfCards = (cardButtons.count + 1) / 2
+        game.startNewGame(numberOfPairsOfCards: numberOfPairsOfCards)
+        updateViewFromModel()
+    }
+    
+    let emojiThemes = [
+        ["🎃", "👻", "💀", "😈", "🦇", "😱"],
+        ["🎅🏾", "⭐️", "⛄️", "🔔", "🎁", "🎄"],
+        ["🐣", "🐇", "🥚", "🍫", "🌱", "🧺"],
+        ["🍏", "🍊", "🍓", "🍌", "🍇", "🍉"],
+        ["🐶", "🐱", "🐭", "🐨", "🐰", "🐼"],
+        ["👮‍♀️", "👷‍♀️", "👩‍🌾", "👩‍🏫", "👩‍🍳", "👩‍🔬"]
+    ]
+    
+    func getRandomTheme() -> Array<String> {
+        let emojiIndex: Int = Int(arc4random_uniform(UInt32(emojiThemes.count)))
+        return emojiThemes[emojiIndex]
     }
 }
 
