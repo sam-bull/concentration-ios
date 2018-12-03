@@ -18,14 +18,20 @@ class ViewController: UIViewController {
         }
     }
     
+    var score = 0 {
+        didSet {
+            scoreLabel.text = "Score: \(score)"
+        }
+    }
+    
     @IBOutlet var cardButtons: [UIButton]!
     
     lazy var emojiChoices = getRandomTheme()
     
     @IBOutlet weak var flipCountLabel: UILabel!
+    @IBOutlet weak var scoreLabel: UILabel!
     
     @IBAction func touchCard(_ sender: UIButton) {
-        flipCount += 1
         if let cardNumber = cardButtons.index(of: sender) {
             game.chooseCard(at: cardNumber)
             updateViewFromModel()
@@ -36,6 +42,8 @@ class ViewController: UIViewController {
     }
     
     func updateViewFromModel() {
+        flipCount = game.flips
+        score = game.score
         for index in cardButtons.indices {
             let button = cardButtons[index]
             let card = game.cards[index]
@@ -61,6 +69,7 @@ class ViewController: UIViewController {
     
     @IBAction func newGame() {
         flipCount = 0
+        score = 0
         emojiChoices = getRandomTheme()
         let numberOfPairsOfCards = (cardButtons.count + 1) / 2
         game.startNewGame(numberOfPairsOfCards: numberOfPairsOfCards)
