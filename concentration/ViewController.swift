@@ -10,7 +10,11 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    lazy var game = Concentration(numberOfPairsOfCards: (cardButtons.count + 1) / 2)
+    lazy var game = Concentration(numberOfPairsOfCards: numberOfPairsOfCards)
+    
+    var numberOfPairsOfCards: Int {
+        return (cardButtons.count + 1) / 2
+    }
     
     var flipCount = 0 {
         didSet {
@@ -26,7 +30,7 @@ class ViewController: UIViewController {
     
     @IBOutlet var cardButtons: [UIButton]!
     
-    lazy var emojiChoices = getRandomTheme()
+    lazy var emojiChoices: String = getRandomTheme()
     
     @IBOutlet weak var flipCountLabel: UILabel!
     @IBOutlet weak var scoreLabel: UILabel!
@@ -57,37 +61,48 @@ class ViewController: UIViewController {
         }
     }
     
-    var emoji = [Int:String]()
+    var emoji = [Card:String]()
     
     func emoji(for card: Card) -> String {
-        if emoji[card.identifier] == nil, emojiChoices.count > 0 {
-            let randomIndex = Int(arc4random_uniform(UInt32(emojiChoices.count)))
-            emoji[card.identifier] = emojiChoices.remove(at: randomIndex)
+        if emoji[card] == nil, emojiChoices.count > 0 {
+            let randomIndex = emojiChoices.index(emojiChoices.startIndex, offsetBy: emojiChoices.count.arc4random)
+            emoji[card] = String(emojiChoices.remove(at: randomIndex))
         }
-        return emoji[card.identifier] ?? "?"
+        return emoji[card] ?? "?"
     }
     
     @IBAction func newGame() {
         flipCount = 0
         score = 0
         emojiChoices = getRandomTheme()
-        let numberOfPairsOfCards = (cardButtons.count + 1) / 2
         game.startNewGame(numberOfPairsOfCards: numberOfPairsOfCards)
         updateViewFromModel()
     }
     
-    let emojiThemes = [
-        ["🎃", "👻", "💀", "😈", "🦇", "😱"],
-        ["🎅🏾", "⭐️", "⛄️", "🔔", "🎁", "🎄"],
-        ["🐣", "🐇", "🥚", "🍫", "🌱", "🧺"],
-        ["🍏", "🍊", "🍓", "🍌", "🍇", "🍉"],
-        ["🐶", "🐱", "🐭", "🐨", "🐰", "🐼"],
-        ["👮‍♀️", "👷‍♀️", "👩‍🌾", "👩‍🏫", "👩‍🍳", "👩‍🔬"]
+    private let emojiThemes = [
+        "🎃👻💀😈🦇😱",
+        "🎅🏾⭐️⛄️🔔🎁🎄",
+        "🐣🐇🥚🍫🌱🧺",
+        "🍏🍊🍓🍌🍇🍉",
+        "🐶🐱🐭🐨🐰🐼",
+        "👮‍♀️👷‍♀️👩‍🌾👩‍🏫👩‍🍳👩‍🔬"
     ]
     
-    func getRandomTheme() -> Array<String> {
-        let emojiIndex: Int = Int(arc4random_uniform(UInt32(emojiThemes.count)))
-        return emojiThemes[emojiIndex]
+    private func getRandomTheme() -> String {
+        return emojiThemes[emojiThemes.count.arc4random]
     }
 }
 
+extension Int {
+    var arc4random: Int {
+        if self > 0 {
+            return Int(arc4random_uniform(UInt32(self)))
+        }
+        else if self < 0 {
+            return -Int(arc4random_uniform(UInt32(abs(self))))
+        }
+        else {
+            return 0
+        }
+    }
+}
