@@ -10,6 +10,21 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    var backgroundColour = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0) {
+        didSet {
+            self.view.backgroundColor = backgroundColour
+            newGameButton.setTitleColor(backgroundColour, for: .normal)
+        }
+    }
+    var cardColour = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1) {
+        didSet {
+            gameTitleLabel.textColor = cardColour
+            flipCountLabel.textColor = cardColour
+            scoreLabel.textColor = cardColour
+            newGameButton.backgroundColor = cardColour
+        }
+    }
+    
     lazy var game = Concentration(numberOfPairsOfCards: numberOfPairsOfCards)
     
     var numberOfPairsOfCards: Int {
@@ -28,12 +43,13 @@ class ViewController: UIViewController {
         }
     }
     
-    @IBOutlet var cardButtons: [UIButton]!
-    
     lazy var emojiChoices: String = getRandomTheme()
     
+    @IBOutlet weak var gameTitleLabel: UILabel!
+    @IBOutlet var cardButtons: [UIButton]!
     @IBOutlet weak var flipCountLabel: UILabel!
     @IBOutlet weak var scoreLabel: UILabel!
+    @IBOutlet weak var newGameButton: UIButton!
     
     @IBAction func touchCard(_ sender: UIButton) {
         if let cardNumber = cardButtons.index(of: sender) {
@@ -45,6 +61,11 @@ class ViewController: UIViewController {
         }
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.newGame()
+    }
+    
     func updateViewFromModel() {
         flipCount = game.flips
         score = game.score
@@ -53,10 +74,10 @@ class ViewController: UIViewController {
             let card = game.cards[index]
             if card.isFaceUp {
                 button.setTitle(emoji(for: card), for: UIControl.State.normal)
-                button.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+                button.backgroundColor = backgroundColour
             } else {
                 button.setTitle("", for: UIControl.State.normal)
-                button.backgroundColor = card.isMatched ? #colorLiteral(red: 1, green: 0.5763723254, blue: 0, alpha: 0) : #colorLiteral(red: 1, green: 0.5763723254, blue: 0, alpha: 1)
+                button.backgroundColor = card.isMatched ? #colorLiteral(red: 1, green: 0.5763723254, blue: 0, alpha: 0) : cardColour
             }
         }
     }
@@ -88,8 +109,20 @@ class ViewController: UIViewController {
         "👮‍♀️👷‍♀️👩‍🌾👩‍🏫👩‍🍳👩‍🔬"
     ]
     
+    private let colorThemes = [
+        [#colorLiteral(red: 0, green: 0, blue: 0, alpha: 1), #colorLiteral(red: 1, green: 0.5763723254, blue: 0, alpha: 1)],
+        [#colorLiteral(red: 0.001419739613, green: 0.5, blue: 0.002202855277, alpha: 1), #colorLiteral(red: 0.7496827411, green: 0.1121456492, blue: 0.006477096593, alpha: 1)],
+        [#colorLiteral(red: 0.9764705896, green: 0.850980401, blue: 0.5490196347, alpha: 1), #colorLiteral(red: 0.9098039269, green: 0.4784313738, blue: 0.6431372762, alpha: 1)],
+        [#colorLiteral(red: 0.5791940689, green: 0.1280144453, blue: 0.5726861358, alpha: 1), #colorLiteral(red: 1, green: 0.9755425587, blue: 0.3735585, alpha: 1)],
+        [#colorLiteral(red: 0.9411764741, green: 0.4980392158, blue: 0.3529411852, alpha: 1), #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)],
+        [#colorLiteral(red: 0.4745098054, green: 0.8392156959, blue: 0.9764705896, alpha: 1), #colorLiteral(red: 0.5843137503, green: 0.8235294223, blue: 0.4196078479, alpha: 1)]
+    ]
+    
     private func getRandomTheme() -> String {
-        return emojiThemes[emojiThemes.count.arc4random]
+        let random = emojiThemes.count.arc4random
+        backgroundColour = colorThemes[random][0]
+        cardColour = colorThemes[random][1]
+        return emojiThemes[random]
     }
 }
 
